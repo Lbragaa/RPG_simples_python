@@ -4,8 +4,8 @@ import math
 import time
 
 battle_now = True
-goblin_Names = ["Alymurh", "Dalys", "Sarkath", "Khmaz", "Kerin", "The Strongest Goblin", "Calothosk", "Gorgandr",
-                "Kolloth", "Gordhon", "Kykes"]
+goblin_Names = [
+    "Alymurh", "Dalys", "Sarkath", "Khmaz", "Kerin", "The Strongest Goblin", "Calothosk", "Gorgandr","Kolloth", "Gordhon", "Kykes"]
 
 
 # self,hp,strength,speed,defense
@@ -66,8 +66,8 @@ Defense: {self.defense}\n""")
                     return 0
                 print(f'You dealt {dmg - Edefense} damage!\n')
                 return dmg - Edefense
-        elif nA in range(10,15):
-            dmg += randint(0,1)
+        elif nA in range(10, 15):
+            dmg += randint(0, 1)
             if (dmg - Edefense) <= 0:
                 return 0
             print(f'You dealt {dmg - Edefense} damage!\n')
@@ -127,9 +127,11 @@ Defense: {self.defense}\n""")
             print("Your Speed has increased!\n")
         self.neededXp += 5
         self.currentXp = 0
+
     def checklvlUp(self):
         if p1.currentXp >= p1.neededXp:
             p1.levelUp()
+
 
 class Goblin_1:
     def __init__(self):
@@ -177,6 +179,7 @@ class Goblin_1:
             print(f"Your opponent landed a critical hit and dealt {(math.ceil(dmg * 1.5)) - p1.defense} damage!\n")
             return (math.ceil(dmg * 1.5)) - p1.defense
 
+
 class Goblin_2:
     def __init__(self):
         self.alive = True
@@ -194,8 +197,8 @@ class Goblin_2:
         if self.name == "The Strongest Goblin":
             self.hp = 20
             self.attack = randint(3, 5)
-            self.defense = randint(2,3)
-            self.speed = randint(7,11)
+            self.defense = randint(2, 3)
+            self.speed = randint(7, 11)
             self.xpToGive = 12
         self.critNeed = 20
         self.die = 20
@@ -224,6 +227,7 @@ class Goblin_2:
                 return 0
             print(f"Your opponent landed a critical hit and dealt {(math.ceil(dmg * 1.5)) - p1.defense} damage!\n")
             return (math.ceil(dmg * 1.5)) - p1.defense
+
 
 p1 = Player()
 
@@ -269,6 +273,7 @@ class Swords:
         elif current_opponent.name == "The Strongest Goblin":
             self.name = f"Gabiritos's the Great grand blade"
             self.power = 5
+
 
 def battling():
     global battle_now
