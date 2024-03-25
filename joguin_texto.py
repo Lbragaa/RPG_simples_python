@@ -48,7 +48,7 @@ Level: {self.level}\n
 Total Health: {self.originhp}
 Current Health: {self.hp}
 Weapon: {self.weaponname} / Power: {self.weaponpower}
-Attack: {self.fullattack} (+{self.weaponpower})
+Attack: {self.fullattack} / (+{self.weaponpower})
 Speed: {self.speed}
 Defense: {self.defense}\n""")
 
@@ -310,6 +310,7 @@ class Swords:
 def battling():
     global battle_now
     battle_now = True
+    round_turn = 1
     p1.hp = p1.originhp
     if p1.speed >= math.ceil(current_opponent.speed*1.5) and current_opponent.alive:
         time.sleep(1.5)
@@ -343,6 +344,7 @@ def battling():
                     second_turn = False
             if current_opponent.alive:
                 p1.hp = p1.hp - current_opponent.G_attack()
+                round_turn += 1
         elif p1.speed >= current_opponent.speed:
             time.sleep(1)
             status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
@@ -356,6 +358,7 @@ def battling():
             status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
             if current_opponent.alive:
                 p1.hp = p1.hp - current_opponent.G_attack()
+                round_turn += 1
         else:
             time.sleep(2)
             status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
@@ -370,6 +373,7 @@ def battling():
                     p1.ShowStats()
                     continue
                 current_opponent.hp = (current_opponent.hp - action)
+                round_turn += 1
                 if current_opponent.hp <= 0 or current_opponent.alive == False:
                     status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
                 yourturn = False

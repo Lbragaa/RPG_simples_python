@@ -5,17 +5,22 @@ import time
 
 battle_now = True
 goblin_Names = [
-    "Alymurh", "Dalys", "Sarkath", "Khmaz", "Kerin", "The Strongest Goblin", "Calothosk", "Gorgandr","Kolloth", "Gordhon", "Kykes"]
+    "Alymurh", "Dalys", "Sarkath", "Khmaz", "Kerin", "The Strongest Goblin", "Calothosk", "Gorgandr", "Kolloth",
+    "Gordhon", "Kykes"]
+vampire_names = ["Kassius", "Vladimir", "Marceline", "Drahkuhla", "Edward", "Morgana"]
+vamp_boss_name = "Lord Nightshade, The Sovereign of Shadows"
+
 
 # self,hp,strength,speed,defense
 def rolldie(max):
     n = randint(1, max)
     return n
 
+
 class Player:
     def __init__(self):
 
-        #Basic stats
+        # Basic stats
         self.alive = True
         self.name = input("What will your name be?: ")
         self.level = 1
@@ -30,12 +35,12 @@ class Player:
         self.weaponpower = 0
         self.fullattack = self.attack + self.weaponpower
 
-        #Crit
+        # Crit
         self.critNeed = 20
         self.die = 20
-        #Level UP
+        # Level UP
         self.currentXp = 0
-        self.neededXp = 5
+        self.neededXp = 8
         if self.hp <= 0:
             self.alive = False
 
@@ -48,7 +53,7 @@ Level: {self.level}\n
 Total Health: {self.originhp}
 Current Health: {self.hp}
 Weapon: {self.weaponname} / Power: {self.weaponpower}
-Attack: {self.fullattack} (+{self.weaponpower})
+Attack: {self.fullattack} / (+{self.weaponpower})
 Speed: {self.speed}
 Defense: {self.defense}\n""")
 
@@ -61,36 +66,45 @@ Defense: {self.defense}\n""")
         if nA == 1:
             print("You missed your attack!\n")
             return 0
-        elif nA in range(2, 10):
-            ran = randint(1, 4)
-            if ran == 4:
-                dmg += 1
+        elif nA in range(2, 6):
+            dmg -= randint(1, 2)
+            print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
+            return max(0, dmg - Edefense)
+        elif nA in range(6, 10):
             print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
             return max(0, dmg - Edefense)
         elif nA in range(10, 15):
             dmg += randint(0, 1)
-            print(f'You dealt {max(0,dmg - Edefense)} damage!\n')
-            return max(0,dmg - Edefense)
+            print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
+            return max(0, dmg - Edefense)
         elif nA in range(15, 18):
-            ran = randint(1, 5)
-            if ran in range(1, 5):
+            ran = randint(1, 4)
+            if ran in range(1, 4):
                 dmg += 1
-            print(f'You dealt {max(0,dmg - Edefense)} damage!\n')
-            return max(0,dmg - Edefense)
+            print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
+            return max(0, dmg - Edefense)
         elif nA in range(18, crit):
-            ran = randint(1, 5)
+            ran = randint(1, 6)
             if ran in range(1, 5):
+                dmg += 2
+            else:
                 dmg += 1
-            print(f'You dealt {max(0,dmg - Edefense)} damage!\n')
-            return max(0,dmg - Edefense)
+            print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
+
+            return max(0, dmg - Edefense)
         elif nA >= crit:
             time.sleep(1)
-            dmg += random.randint(1, 2)
+            ran = randint(1, 3)
+            dmg += 1
+            if ran == 3:
+                dmg += 1
             crit_dmg = math.ceil(dmg * 1.5) - Edefense
-            print(f"You had a critical hit and dealt {max(0,crit_dmg)} damage!\n")
-            return max(0,crit_dmg)
+            print(f"You had a critical hit and dealt {max(0, crit_dmg)} damage!\n")
+            return max(0, crit_dmg)
+
     def action(self):
-        action = input("""What will you do, chosen one?: """)
+        action = input("""What will you do, chosen one?: 
+(You may \"atk\" or \"stats\")  """)
         if action.lower() == "atk" or action.lower() == "attack":
             return self.P_attack(current_opponent.defense)
         elif action.lower() == "stats":
@@ -99,16 +113,28 @@ Defense: {self.defense}\n""")
             print("i don really kn what dat means. you doing nothing cuz of it")
             return 0
 
+    def boost_stats(self):
+        self.originhp += 2
+        self.attack += 1
+        self.fullattack = self.attack + self.weaponpower
+        self.speed += 0.5
+        if self.speed % 1 == 0:
+            self.speed = int(self.speed)
+        self.defense += 0.5
+        if self.defense % 1 == 0:
+            self.defense = int(self.defense)
+
     def levelUp(self):
         accepted_words = ["hp", "atk", "def", "spd"]
         self.level += 1
-        print(f"""Congrats! You have leveled up to level {self.level}!
+        self.boost_stats()
+        print(f"""Congrats! You have leveled up to level {self.level} and your stats increased!
 |Choose a stat to upgrade|\n""")
         time.sleep(2.2)
         p1.lvlShowStats()
         decision = input("What stat would you like to improve?: (Hp, Atk, Def, Spd)\n").lower()
         while decision not in accepted_words:
-            decision = input("What stat would you like to improve?: (Hp, Atk, Def, Spd)\n")
+            decision = input("Please... What stat would you like to improve?: (Hp, Atk, Def, Spd)\n")
         if decision == "hp":
             self.originhp += 2
             print("Your HP has increased!\n")
@@ -122,8 +148,8 @@ Defense: {self.defense}\n""")
         elif decision == "spd":
             self.speed += 1
             print("Your Speed has increased!\n")
+        self.currentXp -= self.neededXp
         self.neededXp += 5
-        self.currentXp = 0
 
     def lvlShowStats(self):
         print("Your current stats are:")
@@ -132,9 +158,11 @@ Total Health: {self.originhp}
 Attack: {self.fullattack} (+{self.weaponpower})
 Speed: {self.speed}
 Defense: {self.defense}\n""")
+
     def checklvlUp(self):
-        if p1.currentXp >= p1.neededXp:
+        while p1.currentXp >= p1.neededXp:
             p1.levelUp()
+
 
 class Goblin_1:
     def __init__(self):
@@ -145,16 +173,16 @@ class Goblin_1:
         self.speed = randint(7, 12)
         self.hp = randint(5, 10)
         self.defense = 0
-        self.xpToGive = 0
+        self.xpToGive = 4
         if self.hp >= 8:
             self.xpToGive = 5
-        else:
-            self.xpToGive = 4
         if self.name == "The Strongest Goblin":
             self.hp = 20
             self.attack = randint(2, 4)
+            self.speed = randint(6, 11)
             self.defense = 1
-        self.critNeed = 20
+            self.xpToGive = 40
+        self.critNeed = 19
         self.die = 20
         if self.hp <= 0:
             self.alive = False
@@ -169,25 +197,26 @@ class Goblin_1:
             print("Your opponent missed its attack!\n")
             return 0
         elif nA < 17:
-            if (dmg - p1.defense) <= 0:
+            if math.ceil(dmg - p1.defense) <= 0:
                 print(f"Your opponent did zero damage!")
                 return 0
-            print(f'Your opponent dealt {dmg - p1.defense} damage!\n')
-            return dmg - p1.defense
-        elif nA in range(17,crit):
-            dmg += randint(0,1)
-            if (dmg - p1.defense) <= 0:
+            print(f'Your opponent dealt {math.ceil(dmg - p1.defense)} damage!\n')
+            return math.ceil(dmg - p1.defense)
+        elif nA in range(17, crit):
+            dmg += randint(0, 1)
+            if math.ceil(dmg - p1.defense) <= 0:
                 print(f"Your opponent did zero damage!")
                 return 0
-            print(f'Your opponent dealt {dmg - p1.defense} damage!\n')
-            return dmg - p1.defense
+            print(f'Your opponent dealt {math.ceil(dmg - p1.defense)} damage!\n')
+            return math.ceil(dmg - p1.defense)
         else:
-            dmg += 0.5
-            if math.ceil(dmg * 1.5) - p1.defense <= 0:
+            dmg += 1
+            if math.ceil((math.ceil(dmg * 1.5)) - p1.defense) <= 0:
                 print(f"Your opponent did zero damage!")
                 return 0
-            print(f"Your opponent landed a critical hit and dealt {(math.ceil(dmg * 1.5)) - p1.defense} damage!\n")
-            return (math.ceil(dmg * 1.5)) - p1.defense
+            print(
+                f"Your opponent landed a critical hit and dealt {math.ceil((math.ceil(dmg * 1.5)) - p1.defense)} damage!\n")
+            return math.ceil((math.ceil(dmg * 1.5)) - p1.defense)
 
 
 class Goblin_2:
@@ -195,48 +224,57 @@ class Goblin_2:
         self.alive = True
         self.name = random.choice(goblin_Names)
         self.race = "Goblin"
-        self.attack = randint(2, 4)
-        self.speed = randint(7, 12)
+        self.attack = randint(3, 4)
+        self.speed = randint(9, 13)
         self.defense = 1
-        self.hp = randint(7, 13)
-        self.xpToGive = 0
-        if self.hp >= 10:
-            self.xpToGive = 6
-        else:
-            self.xpToGive = 5
-        if self.name == "The Strongest Goblin":
-            self.hp = 20
-            self.attack = randint(4, 5)
-            self.defense = randint(2, 3)
-            self.speed = randint(7, 11)
-            self.xpToGive = 12
+        self.hp = randint(8, 14)
+        self.xpToGive = 5
+
+        # CHANGES TO OTHER GOBLINS
         self.critNeed = 20
         self.die = 20
+        if self.hp >= 10:
+            self.xpToGive = 8
+        if self.name == "The Strongest Goblin":
+            self.hp = 20
+            self.attack = randint(5, 7)
+            self.defense = randint(2, 3)
+            self.speed = randint(7, 11)
+            self.xpToGive = 20
+            self.critNeed = 19
         if self.hp <= 0:
             self.alive = False
 
     def G_attack(self):
         nA = rolldie(self.die)
-        dmg = self.attack + randint(0, 1)
+        dmg = self.attack
         crit = self.critNeed
         print(f"\nYour opponent is about to attack you...")
         time.sleep(2)
         if nA <= 2:
             print("Your opponent missed its attack!\n")
             return 0
-        elif nA < crit:
-            if (dmg - p1.defense) <= 0:
+        elif nA < 17:
+            if math.ceil(dmg - p1.defense) <= 0:
                 print(f"Your opponent did zero damage!")
                 return 0
-            print(f'Your opponent dealt {dmg - p1.defense} damage!\n')
-            return dmg - p1.defense
+            print(f'Your opponent dealt {math.ceil(dmg - p1.defense)} damage!\n')
+            return math.ceil(dmg - p1.defense)
+        elif nA in range(17, crit):
+            dmg += randint(0, 1)
+            if math.ceil(dmg - p1.defense) <= 0:
+                print(f"Your opponent did zero damage!")
+                return 0
+            print(f'Your opponent dealt {math.ceil(dmg - p1.defense)} damage!\n')
+            return math.ceil(dmg - p1.defense)
         else:
-            dmg += 0.5
-            if math.ceil(dmg * 1.5) - p1.defense <= 0:
+            dmg += 1
+            if math.ceil((math.ceil(dmg * 1.5)) - p1.defense) <= 0:
                 print(f"Your opponent did zero damage!")
                 return 0
-            print(f"Your opponent landed a critical hit and dealt {(math.ceil(dmg * 1.5)) - p1.defense} damage!\n")
-            return (math.ceil(dmg * 1.5)) - p1.defense
+            print(
+                f"Your opponent landed a critical hit and dealt {math.ceil((math.ceil(dmg * 1.5)) - p1.defense)} damage!\n")
+            return math.ceil((math.ceil(dmg * 1.5)) - p1.defense)
 
 
 p1 = Player()
@@ -253,6 +291,123 @@ time.sleep(2)
 current_opponent = e1 = Goblin_1()
 
 
+class Vamp:
+    def __init__(self):
+        self.alive = True
+        self.name = random.choice(vampire_names)
+        self.race = "Vampire"
+        self.attack = randint(5, 7)
+        self.speed = randint(9, 14)
+        self.defense = 3
+        self.hp = randint(13, 18)
+        self.xpToGive = 12
+
+        # CRIT
+        self.critNeed = 19
+        self.die = 20
+
+        # CHANGES TO OTHER VAMPIRES
+        if self.hp >= 13:
+            self.xpToGive = 18
+        if self.hp <= 0:
+            self.alive = False
+
+    def G_attack(self):
+        nA = rolldie(self.die)
+        dmg = self.attack
+        crit = self.critNeed
+        recover_hp = 1
+        print(f"\nYour opponent is about to attack you...")
+        time.sleep(2)
+        if nA <= 2:
+            print("Your opponent missed its attack!\n")
+            return 0
+        elif nA < 14:
+            if math.ceil(dmg - p1.defense) <= 0:
+                print(f"Your opponent did zero damage!")
+                return 0
+            print(f'Your opponent dealt {math.ceil(dmg - p1.defense)} damage!\n')
+            return math.ceil(dmg - p1.defense)
+        elif nA in range(14, crit):
+            dmg += randint(0, 1)
+            if math.ceil(dmg - p1.defense) <= 0:
+                print(f"Your opponent did zero damage!")
+                return 0
+            elif math.ceil(dmg - p1.defense) >= 4:
+                recover_hp += 1
+            print(f'The vampire hit you for {math.ceil(dmg - p1.defense)} damage and recovered {recover_hp} HP!\n')
+            self.hp += recover_hp
+            return math.ceil(dmg - p1.defense)
+        else:
+            dmg += 1
+            recover_hp += 2
+            if math.ceil((math.ceil(dmg * 1.5)) - p1.defense) <= 0:
+                print(f"Your opponent did zero damage!")
+                return 0
+            print(
+                f"Your opponent landed a critical hit and dealt {math.ceil((math.ceil(dmg * 1.5)) - p1.defense)} damage and recovered 3 HP!\n")
+            self.hp += recover_hp
+            return math.ceil((math.ceil(dmg * 1.5)) - p1.defense)
+
+
+class Nightshade:
+    def __init__(self):
+        self.alive = True
+        self.name = vamp_boss_name
+        self.race = "Vampire"
+        self.attack = randint(9, 12)
+        self.speed = randint(13, 19)
+        self.defense = 7
+        self.hp = 35
+        self.xpToGive = 40
+
+        # CRIT
+        self.critNeed = 17
+        self.die = 20
+
+        # CHANGES TO OTHER VAMPIRES
+        if self.hp <= 0:
+            self.alive = False
+
+    def G_attack(self):
+        nA = rolldie(self.die)
+        dmg = self.attack
+        crit = self.critNeed
+        recover_hp = 2
+        print(f"\nYour opponent is about to attack you...")
+        time.sleep(2)
+        if nA == 1:
+            print("Your opponent missed its attack!\n")
+            return 0
+        elif nA < 10:
+            if math.ceil(dmg - p1.defense) <= 0:
+                print(f"Your opponent did zero damage!")
+                return 0
+            print(f'Your opponent dealt {math.ceil(dmg - p1.defense)} damage!\n')
+            return math.ceil(dmg - p1.defense)
+        elif nA in range(10, crit):
+            dmg += randint(0, 1)
+            recover_hp += 2
+            if math.ceil(dmg - p1.defense) <= 0:
+                print(f"Your opponent did zero damage!")
+                return 0
+            elif math.ceil(dmg - p1.defense) >= 6:
+                recover_hp += 1
+            print(f'The vampire hit you for {math.ceil(dmg - p1.defense)} damage and recovered {recover_hp} HP!\n')
+            self.hp += recover_hp
+            return math.ceil(dmg - p1.defense)
+        else:
+            dmg += 2
+            recover_hp += 4
+            if math.ceil((math.ceil(dmg * 1.5)) - p1.defense) <= 0:
+                print(f"Your opponent did zero damage!")
+                return 0
+            print(
+                f"Your opponent landed a critical hit and dealt massive {math.ceil((math.ceil(dmg * 1.5)) - p1.defense)} damage! and recovered {recover_hp} HP\n")
+            self.hp += recover_hp
+            return math.ceil((math.ceil(dmg * 1.5)) - p1.defense)
+
+
 def status_and_action(player_name, p_health, opponentName, o_health):
     global battle_now
     if p_health <= 0 or p1.alive == False:
@@ -265,11 +420,16 @@ def status_and_action(player_name, p_health, opponentName, o_health):
     elif o_health <= 0 or current_opponent.alive == False:
         current_opponent.alive = False
         battle_now = False
-        print(f"You have defeated your opponent, {opponentName}, the {current_opponent.race}!\n")
+        time.sleep(1.3)
+        if current_opponent.name == vamp_boss_name:
+            print(f"Nightshade, the lord of vampires, has fell!!")
+        else:
+            print(f"You have defeated your opponent, {opponentName}, the {current_opponent.race}!\n")
     else:
         time.sleep(1)
         print(f"""\n{opponentName}'s HP: {o_health}
 Your current HP: {p_health}\n""")
+
 
 class Swords:
     def __init__(self, power):
@@ -283,15 +443,46 @@ class Swords:
             self.name = f"Gabiritos's the Great grand blade"
             self.power = 5
 
+
 def battling():
     global battle_now
     battle_now = True
+    round_turn = 1
     p1.hp = p1.originhp
-    if (p1.speed < current_opponent.speed) and current_opponent.alive:
+    if p1.speed >= math.ceil(current_opponent.speed * 1.5) and current_opponent.alive:
+        time.sleep(1.5)
+        print(f'\nYou are way faster than your opponent and may act twice per turn!!')
+    elif (p1.speed < current_opponent.speed) and current_opponent.alive:
         time.sleep(1.5)
         print("\nYour opponent is faster than you and will move first!")
     while battle_now:
-        if p1.speed >= current_opponent.speed:
+        if p1.speed >= math.ceil(current_opponent.speed * 1.5):
+            time.sleep(1)
+            status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
+            action = p1.action()
+            if action == "stats":
+                time.sleep(1)
+                p1.ShowStats()
+                continue
+            current_opponent.hp = current_opponent.hp - action
+            status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
+            if current_opponent.alive:
+                second_turn = True
+                while second_turn:
+                    print("|This is your second turn|\n")
+                    time.sleep(2)
+                    action = p1.action()
+                    if action == "stats":
+                        time.sleep(1)
+                        p1.ShowStats()
+                        continue
+                    current_opponent.hp = current_opponent.hp - action
+                    status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
+                    second_turn = False
+            if current_opponent.alive:
+                p1.hp = p1.hp - current_opponent.G_attack()
+                round_turn += 1
+        elif p1.speed >= current_opponent.speed:
             time.sleep(1)
             status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
             action = p1.action()
@@ -304,6 +495,7 @@ def battling():
             status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
             if current_opponent.alive:
                 p1.hp = p1.hp - current_opponent.G_attack()
+                round_turn += 1
         else:
             time.sleep(2)
             status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
@@ -318,6 +510,7 @@ def battling():
                     p1.ShowStats()
                     continue
                 current_opponent.hp = (current_opponent.hp - action)
+                round_turn += 1
                 if current_opponent.hp <= 0 or current_opponent.alive == False:
                     status_and_action(p1.name, p1.hp, current_opponent.name, current_opponent.hp)
                 yourturn = False
@@ -328,24 +521,24 @@ def battling():
         p1.checklvlUp()
 
 
-def checksword():
-    time.sleep(3)
-    print("You noticed that the goblin you just defeated dropped his weapon...")
+def checksword(sword):
+    time.sleep(2)
+    print(f"You noticed that the {(current_opponent.race).lower()} you just defeated dropped his weapon...")
     time.sleep(1)
     answer = input("Do you wish to take a look at it? (Y/N): \n")
     time.sleep(1)
     if answer.lower() == "y":
         print(f"""You observe the blade and notice the following:
-Name: {sword1.name}
-Attack power: {sword1.power}\n""")
+Name: {sword.name}
+Attack power: {sword.power}\n""")
         time.sleep(3)
         p1.ShowStats()
         answer = input("Would you like to take this weapon?: """)
         if answer.lower() == "y":
             print("You've got a new sword!\n")
             time.sleep(1.8)
-            p1.weaponname = sword1.name
-            p1.weaponpower = sword1.power
+            p1.weaponname = sword.name
+            p1.weaponpower = sword.power
             p1.fullattack = p1.attack + p1.weaponpower
             p1.ShowStats()
     else:
@@ -362,17 +555,60 @@ But before you can go after it...""")
     print(f"""You are surprised by your first opponent, a goblin named {current_opponent.name}! """)
     battling()
     forest_first_battle = False
+sword1 = Swords(randint(2, 3))
+checksword(sword1)
 
-second_event = True
-while second_event:
-    sword1 = Swords(randint(1, 2))
-    checksword()
+forest_goblin_farm = True
+while forest_goblin_farm:
     question = input(f'Look for another goblin to fight?: (Note: these goblins will be a bit stronger :) ')
     while question.lower() == "y":
         current_opponent = Goblin_2()
         print(f"You will be fighting {current_opponent.name}!")
         battling()
+        if current_opponent.name == "The Strongest Goblin":
+            sword2 = Swords(1)
+            checksword(sword2)
         question = input(f'Look for another goblin to fight?: \n')
     if question.lower() == "n":
         print("Maybe some other time then")
+    else:
+        continue
+    forest_goblin_farm = False
+
+second_event = True
+while second_event:
+    print("""/ Now, you will be heading in the direction of an ancient citadel 
+known as the Veil of Eternal Dusk, / """)
+    input()
+    print("YOU HAVE ENTERED VEIL OF ETERNAL DUSK")
+    input()
+    print(
+        """As I ventured into the shadowed streets of the city, an unsettling chill gripped the air, though its origin remained a mystery.""")
+    input()
+    print("""Suddenly, a rustling from the shadows caught my attention.""")
+    time.sleep(2)
+    print(
+        """Before I could react, a figure emerged, its eyes gleaming with a predatory hunger that sent a shiver down my spine!\n""")
+    current_opponent = Vamp()
+    print(f"""A vampire named {current_opponent.name} has surged!""")
+    battling()
+    current_opponent = Vamp()
+    print(f"Now, a second vampire named {current_opponent.name} will fight you!")
+    battling()
+    current_opponent = Vamp()
+    print(f"A third vampire appears!")
+    battling()
+    print("After three tough battles, you are clearly worn out.")
+    time.sleep(1)
+    print("But the final challenge has yet to come...")
+    time.sleep(1.5)
+    print("Out of nowhere, you feel like you are being watched. Your soul feels it.")
+    current_opponent = Nightshade()
+    print("Behind you, an extremely powerful looking vampire appears!!!!")
+    time.sleep(1.5)
+    print("You are trembling with fear, but nonetheless also filled with determination.")
+    time.sleep(2)
+    print("\n The battle BEGINS!")
+    time.sleep(1)
+    battling()
     second_event = False
