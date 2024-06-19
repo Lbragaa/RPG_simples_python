@@ -7,8 +7,6 @@ battle_now = True
 goblin_Names = [
     "Alymurh", "Dalys", "Sarkath", "Khmaz", "Kerin", "The Strongest Goblin", "Calothosk", "Gorgandr", "Kolloth",
     "Gordhon", "Kykes"]
-vampire_names = ["Kassius", "Vladimir", "Marceline", "Drahkuhla", "Edward", "Morgana"]
-vamp_boss_name = "Lord Nightshade, The Sovereign of Shadows"
 
 
 # self,hp,strength,speed,defense
@@ -64,11 +62,10 @@ Defense: {self.defense}\n""")
         if nA == 1:
             print("You missed your attack!\n")
             return 0
-        elif nA in range(2, 6):
-            dmg -= randint(1, 2)
-            print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
-            return max(0, dmg - Edefense)
-        elif nA in range(6, 10):
+        elif nA in range(2, 10):
+            ran = randint(1, 4)
+            if ran == 4:
+                dmg += 1
             print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
             return max(0, dmg - Edefense)
         elif nA in range(10, 15):
@@ -83,12 +80,9 @@ Defense: {self.defense}\n""")
             return max(0, dmg - Edefense)
         elif nA in range(18, crit):
             ran = randint(1, 6)
-            if ran in range(1, 5):
-                dmg += 2
-            else:
+            if ran in range(1, 6):
                 dmg += 1
             print(f'You dealt {max(0, dmg - Edefense)} damage!\n')
-
             return max(0, dmg - Edefense)
         elif nA >= crit:
             time.sleep(1)
@@ -101,8 +95,7 @@ Defense: {self.defense}\n""")
             return max(0, crit_dmg)
 
     def action(self):
-        action = input("""What will you do, chosen one?: 
-(You may \"atk\" or \"stats\")  """)
+        action = input("""What will you do, chosen one?: """)
         if action.lower() == "atk" or action.lower() == "attack":
             return self.P_attack(current_opponent.defense)
         elif action.lower() == "stats":
@@ -112,7 +105,7 @@ Defense: {self.defense}\n""")
             return 0
 
     def boost_stats(self):
-        self.originhp += 2
+        self.originhp += 1
         self.attack += 1
         self.fullattack = self.attack + self.weaponpower
         self.speed += 0.5
@@ -175,12 +168,12 @@ class Goblin_1:
         if self.hp >= 8:
             self.xpToGive = 5
         if self.name == "The Strongest Goblin":
-            self.hp = 20
+            self.hp = 2
             self.attack = randint(2, 4)
             self.speed = randint(6, 11)
             self.defense = 1
             self.xpToGive = 40
-        self.critNeed = 19
+        self.critNeed = 20
         self.die = 20
         if self.hp <= 0:
             self.alive = False
@@ -222,20 +215,20 @@ class Goblin_2:
         self.alive = True
         self.name = random.choice(goblin_Names)
         self.race = "Goblin"
-        self.attack = randint(3, 4)
-        self.speed = randint(9, 13)
+        self.attack = randint(2, 3)
+        self.speed = randint(7, 13)
         self.defense = 1
-        self.hp = randint(8, 14)
+        self.hp = randint(8, 13)
         self.xpToGive = 5
 
         # CHANGES TO OTHER GOBLINS
         self.critNeed = 20
         self.die = 20
         if self.hp >= 10:
-            self.xpToGive = 8
+            self.xpToGive = 6
         if self.name == "The Strongest Goblin":
             self.hp = 20
-            self.attack = randint(5, 7)
+            self.attack = randint(4, 5)
             self.defense = randint(2, 3)
             self.speed = randint(7, 11)
             self.xpToGive = 20
@@ -405,6 +398,7 @@ class Nightshade:
             self.hp += recover_hp
             return math.ceil((math.ceil(dmg * 1.5)) - p1.defense)
 
+
 def status_and_action(player_name, p_health, opponentName, o_health):
     global battle_now
     if p_health <= 0 or p1.alive == False:
@@ -417,11 +411,8 @@ def status_and_action(player_name, p_health, opponentName, o_health):
     elif o_health <= 0 or current_opponent.alive == False:
         current_opponent.alive = False
         battle_now = False
-        time.sleep(1.3)
-        if current_opponent.name == vamp_boss_name:
-            print(f"Nightshade, the lord of vampires, has fell!!")
-        else:
-            print(f"You have defeated your opponent, {opponentName}, the {current_opponent.race}!\n")
+        time.sleep(1)
+        print(f"You have defeated your opponent, {opponentName}, the {current_opponent.race}!\n")
     else:
         time.sleep(1)
         print(f"""\n{opponentName}'s HP: {o_health}
@@ -518,24 +509,24 @@ def battling():
         p1.checklvlUp()
 
 
-def checksword(sword):
-    time.sleep(2)
+def checksword():
+    time.sleep(3)
     print(f"You noticed that the {(current_opponent.race).lower()} you just defeated dropped his weapon...")
     time.sleep(1)
     answer = input("Do you wish to take a look at it? (Y/N): \n")
     time.sleep(1)
     if answer.lower() == "y":
         print(f"""You observe the blade and notice the following:
-Name: {sword.name}
-Attack power: {sword.power}\n""")
+Name: {sword1.name}
+Attack power: {sword1.power}\n""")
         time.sleep(3)
         p1.ShowStats()
         answer = input("Would you like to take this weapon?: """)
         if answer.lower() == "y":
             print("You've got a new sword!\n")
             time.sleep(1.8)
-            p1.weaponname = sword.name
-            p1.weaponpower = sword.power
+            p1.weaponname = sword1.name
+            p1.weaponpower = sword1.power
             p1.fullattack = p1.attack + p1.weaponpower
             p1.ShowStats()
     else:
@@ -552,8 +543,8 @@ But before you can go after it...""")
     print(f"""You are surprised by your first opponent, a goblin named {current_opponent.name}! """)
     battling()
     forest_first_battle = False
-sword1 = Swords(randint(2, 3))
-checksword(sword1)
+sword1 = Swords(randint(1, 2))
+checksword()
 
 forest_goblin_farm = True
 while forest_goblin_farm:
@@ -562,16 +553,12 @@ while forest_goblin_farm:
         current_opponent = Goblin_2()
         print(f"You will be fighting {current_opponent.name}!")
         battling()
-        if current_opponent.name == "The Strongest Goblin":
-            sword2 = Swords(1)
-            checksword(sword2)
         question = input(f'Look for another goblin to fight?: \n')
     if question.lower() == "n":
         print("Maybe some other time then")
     else:
         continue
     forest_goblin_farm = False
-
 second_event = True
 while second_event:
     print("""/ Now, you will be heading in the direction of an ancient citadel 
