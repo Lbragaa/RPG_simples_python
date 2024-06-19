@@ -47,9 +47,7 @@ class Player:
     def ShowStats(self):
         print("Your current stats are:")
         time.sleep(0.8)
-        print(f"""
-Name: {self.name}
-Level: {self.level}\n
+        print(f"""evel: {self.level}\n
 Total Health: {self.originhp}
 Current Health: {self.hp}
 Weapon: {self.weaponname} / Power: {self.weaponpower}
@@ -407,7 +405,6 @@ class Nightshade:
             self.hp += recover_hp
             return math.ceil((math.ceil(dmg * 1.5)) - p1.defense)
 
-
 def status_and_action(player_name, p_health, opponentName, o_health):
     global battle_now
     if p_health <= 0 or p1.alive == False:
@@ -428,7 +425,7 @@ def status_and_action(player_name, p_health, opponentName, o_health):
     else:
         time.sleep(1)
         print(f"""\n{opponentName}'s HP: {o_health}
-Your current HP: {p_health}\n""")
+{player_name}'s HP: {p_health}\n""")
 
 
 class Swords:
